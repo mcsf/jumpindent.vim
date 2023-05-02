@@ -11,19 +11,30 @@ function! jumpindent#JumpIndent(up, fwd)
 	let indentChar = currentLine[0]
 	let indentLevel = match(currentLine, "\\S")
 
-	let searchPattern = "^"
-	while indentLevel > (a:up ? 1 : 0)
+	" The target indentation is one level up if a:up is true
+	if a:up
+		let indentLevel = indentLevel - 1
+	endif
+
+	let searchPattern = ""
+	while indentLevel > 0
 		let searchPattern = searchPattern . indentChar
 		let indentLevel = indentLevel - 1
 	endwhile
-	let searchPattern = searchPattern . "\\S"
+	let searchPattern = "^" . searchPattern . "\\S"
 
-	" Normal-mode `n` and `N` are preferred over executing `:/` / `:?` because
-	" they set jump points.
-	let @/ = searchPattern
-	if a:fwd
-		normal n
-	else
-		normal 0N
+	" e: move to the End of the match
+	" s: Set the ' mark at the previous location of the cursor
+	" W: don't Wrap around the end of the file
+	let searchFlags = "esW"
+	if ! a:fwd
+		" b: search Backward instead of forward
+		" z: start searching at the cursor column instead of zero
+		let searchFlags = searchFlags . "bz"
 	endif
+
+	" Prefer search() over previous methods (`:/` and `normal n`) as this
+	" allows us to add to preserve <C-O> / <C-I> behaviour while keeping the
+	" user's search register (`let @/`) intact.
+	call search(searchPattern, searchFlags)
 endfunction
