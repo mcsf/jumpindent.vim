@@ -9,19 +9,9 @@
 function! jumpindent#JumpIndent(up, fwd)
 	let currentLine = getline(".")
 	let indentChar = currentLine[0]
-	let indentLevel = match(currentLine, "\\S")
+	let indentLevel = match(currentLine, "\\S") - !! a:up
 
-	" The target indentation is one level up if a:up is true
-	if a:up
-		let indentLevel = indentLevel - 1
-	endif
-
-	let searchPattern = ""
-	while indentLevel > 0
-		let searchPattern = searchPattern . indentChar
-		let indentLevel = indentLevel - 1
-	endwhile
-	let searchPattern = "^" . searchPattern . "\\S"
+	let searchPattern = "^" . repeat(indentChar, indentLevel) . "\\S"
 
 	" e: move to the End of the match
 	" s: Set the ' mark at the previous location of the cursor
