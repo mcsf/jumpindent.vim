@@ -10,7 +10,8 @@
 function! jumpindent#JumpIndent(lvl, fwd)
 	let currentLine = getline(".")
 	let indentChar = currentLine[0]
-	let indentLevel = match(currentLine, "\\S") + a:lvl
+	let factor = indentChar == " " ? &tabstop : 1
+	let indentLevel = match(currentLine, "\\S") + a:lvl * factor
 
 	let searchPattern = "^" . repeat(indentChar, indentLevel) . "\\S"
 
