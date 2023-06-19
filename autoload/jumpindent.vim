@@ -1,15 +1,16 @@
 " Move the cursor to the closest line matching a certain indentation level.
 "
-" If `up` is false, the indentation level will be that of the current line; if
-" true, it will be one level above. Argument `fwd` determines whether to
-" search forward (1) or backward (0).
+" If `lvl` is zero, the indentation level will be that of the current line; if
+" it's negative, it will be _n_ levels above; if positive, it will attempt to
+" drill down. Argument `fwd` determines whether to search forward (1) or
+" backward (0).
 "
 " This assumes that all lines in the buffer are indented consistently;
 " specifically, that spaces and tabs are NOT used interchangeably.
-function! jumpindent#JumpIndent(up, fwd)
+function! jumpindent#JumpIndent(lvl, fwd)
 	let currentLine = getline(".")
 	let indentChar = currentLine[0]
-	let indentLevel = match(currentLine, "\\S") - !! a:up
+	let indentLevel = match(currentLine, "\\S") + a:lvl
 
 	let searchPattern = "^" . repeat(indentChar, indentLevel) . "\\S"
 
