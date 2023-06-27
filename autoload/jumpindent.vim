@@ -10,10 +10,16 @@
 function! jumpindent#JumpIndent(lvl, fwd)
 	let currentLine = getline(".")
 	let indentChar = currentLine[0]
-	let factor = indentChar == " " ? &tabstop : 1
-	let indentLevel = match(currentLine, "\\S") + a:lvl * factor
 
-	let searchPattern = "^" . repeat(indentChar, indentLevel) . "\\S"
+	" Guess from buffer settings if we are at indentation zero
+	if indentChar !~ ' \|\t'
+		let indentChar = &expandtab ? ' ' : '\t'
+	endif
+
+	let factor = indentChar == " " ? &tabstop : 1
+	let indentLevel = match(currentLine, '\S') + a:lvl * factor
+
+	let searchPattern = '^' . repeat(indentChar, indentLevel) . '\S'
 
 	" e: move to the End of the match
 	" s: Set the ' mark at the previous location of the cursor
